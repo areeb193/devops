@@ -1,0 +1,25 @@
+services:
+  server:
+    build:
+      context: ./Server
+      dockerfile: Dockerfile
+    container_name: todo-server
+    ports:
+      - "4001:4000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./Client
+      dockerfile: Dockerfile
+      args:
+        # Use the service name 'server' as host so the client built inside the network can reach the API
+        VITE_API_BASE_URL: http://server:4000
+    container_name: todo-client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    restart: unless-stopped
